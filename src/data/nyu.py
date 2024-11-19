@@ -18,6 +18,7 @@ from PIL import Image
 import torch
 import torchvision.transforms as T
 import torchvision.transforms.functional as TF
+from .nyu_sample import uniform_sample3
 
 warnings.filterwarnings("ignore", category=UserWarning)
 
@@ -153,7 +154,7 @@ class NYU(BaseDataset):
         if num_sample < 1:
             dep_sp = torch.zeros_like(dep)
         else:
-            dep_sp = self.get_sparse_depth(dep, num_sample)
+            dep_sp = uniform_sample3(dep, num_sample)
 
         output = {'rgb': rgb, 'dep': dep_sp, 'gt': dep, 'K': K}
 
@@ -167,6 +168,7 @@ class NYU(BaseDataset):
         idx_nnz = torch.nonzero(dep.view(-1) > 0.0001, as_tuple=False)
 
         num_idx = len(idx_nnz)
+
         idx_sample = torch.randperm(num_idx)[:num_sample]
 
         idx_nnz = idx_nnz[idx_sample[:]]

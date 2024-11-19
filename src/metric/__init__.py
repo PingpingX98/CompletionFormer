@@ -19,6 +19,13 @@ def get(args):
 
     return getattr(module, metric_name)
 
+# 对应新的图片保存格式
+def getNew(args):
+    metric_name = args.model_name + 'Metricnew'
+    module_name = 'metric.' + metric_name.lower()
+    module = import_module(module_name)
+
+    return getattr(module, metric_name)
 
 class BaseMetric:
     def __init__(self, args):

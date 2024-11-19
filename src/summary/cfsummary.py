@@ -14,7 +14,10 @@ import os
 from PIL import Image
 from copy import deepcopy
 
-cmap = 'jet'
+# cmap=colormap,jet:A color gradient transitioning from blue to red, 
+# passing through green and yellow in between.
+cmap = 'jet'    
+# generate color value,specifying color for point, line and  surface
 cm = plt.get_cmap(cmap)
 
 
@@ -73,7 +76,7 @@ class CompletionFormerSummary(BaseSummary):
                 val = self.metric[0, idx]
                 self.add_scalar('Metric/' + name, val, global_step)
 
-                msg += ["{:<s}: {:.5f}  ".format(name, val)]
+                msg += ["{:<s}: {:.4f}  ".format(name, val)]
 
                 if (idx + 1) % 12 == 0:
                     msg += ["\n             "]
@@ -86,9 +89,9 @@ class CompletionFormerSummary(BaseSummary):
             f_metric.close()
 
         # Un-normalization
-        rgb = sample['rgb'].detach()
+        rgb = sample['rgb'].detach()    # 从当前计算图中分离出变量，剪断梯度追踪的联系
         rgb.mul_(self.img_std.type_as(rgb)).add_(self.img_mean.type_as(rgb))
-        rgb = rgb.data.cpu().numpy()
+        rgb = rgb.data.cpu().numpy()    # 将pytorch张量转换成numpy数组
 
         dep = sample['dep'].detach().data.cpu().numpy()
         gt = sample['gt'].detach().data.cpu().numpy()
@@ -99,8 +102,8 @@ class CompletionFormerSummary(BaseSummary):
             confidence = output['confidence']
             if isinstance(confidence, (list, tuple)):
                 confidence = [c.data.cpu().numpy() for c in confidence]
-                if len(confidence) == 1:
-                    confidence = confidence * len(preds)
+                if len(confidence) == 1:    # 意味着模型对所有预测结果的置信度都一样
+                    confidence = confidence * len(preds)    # 复制confidence，使其和preds的预测结果数一样
             else:
                 confidence = confidence.data.cpu().numpy()
                 confidence = [confidence, ] * len(preds)
@@ -125,7 +128,7 @@ class CompletionFormerSummary(BaseSummary):
         pred = np.clip(pred, a_min=0, a_max=self.args.max_depth)
         confidence = [np.clip(conf, a_min=0, a_max=1.0) for conf in confidence]
 
-        list_img = []
+        list_img = []   # 存储处理后的图像
 
         for b in range(0, num_summary):
             rgb_tmp = rgb[b, :, :, :]
@@ -134,6 +137,7 @@ class CompletionFormerSummary(BaseSummary):
             pred_tmp = pred[b, 0, :, :]
             confidence_tmp = [conf[b, 0, :, :] for conf in confidence]
             preds_tmp = [d[b, 0, :, :] for d in preds]
+            # 将深度值映射到颜色
             norm = plt.Normalize(vmin=gt_tmp.min(), vmax=gt_tmp.max())
             error_tmp = depth_err_to_colorbar(pred_tmp, gt_tmp)
 
@@ -185,7 +189,7 @@ class CompletionFormerSummary(BaseSummary):
         self.metric = []
 
     def save(self, epoch, idx, sample, output):
-        with torch.no_grad():
+        with torch.no_grad():   # 确保在保存数据时，不计算梯度
             if self.args.save_result_only:
                 self.path_output = '{}/{}/epoch{:04d}'.format(self.log_dir,
                                                               self.mode, epoch)
@@ -241,24 +245,30 @@ class CompletionFormerSummary(BaseSummary):
 
                 path_save_rgb = '{}/01_rgb.png'.format(self.path_output)
                 path_save_dep = '{}/02_dep.png'.format(self.path_output)
-                path_save_init = '{}/03_pred_init.png'.format(self.path_output)
-                path_save_pred = '{}/05_pred_final.png'.format(self.path_output)
-                path_save_pred_gray = '{}/05_pred_final_gray.png'.format(self.path_output)
-                path_save_gt = '{}/06_gt.png'.format(self.path_output)
-                path_save_error = '{}/07_error.png'.format(self.path_output)
+                #path_save_init = '{}/03_pred_init.png'.format(self.path_output)
+                #path_save_pred = '{}/05_pred_final.png'.format(self.path_output)
+                #path_save_pred_gray = '{}/05_pred_final_gray.png'.format(self.path_output)
+                #path_save_gt = '{}/06_gt.png'.format(self.path_output)
+                #path_save_error = '{}/07_error.png'.format(self.path_output)
+                path_save_pred = '{}/03_pred_final.png'.format(self.path_output)
+                path_save_pred_gray = '{}/03_pred_final_gray.png'.format(self.path_output)
+                path_save_gt = '{}/04_gt.png'.format(self.path_output)
+                
 
                 plt.imsave(path_save_rgb, rgb, cmap=cmap)
                 plt.imsave(path_save_gt, cm(norm(gt)))
                 plt.imsave(path_save_pred, cm(norm(pred)))
                 plt.imsave(path_save_pred_gray, pred_gray, cmap='gray')
                 plt.imsave(path_save_dep, cm(norm(dep)))
-                plt.imsave(path_save_init, cm(norm(feat_init)))
-                plt.imsave(path_save_error, depth_err_to_colorbar(pred, gt, with_bar=True))
-
+                #plt.imsave(path_save_init, cm(norm(feat_init)))
+                #plt.imsave(path_save_error, depth_err_to_colorbar(pred, gt, with_bar=True))
+                '''
                 for k in range(0, len(list_feat)):
                     path_save_inter = '{}/04_pred_prop_{:02d}.png'.format(
                         self.path_output, k)
                     plt.imsave(path_save_inter, list_feat[k])
+                '''
+                
 
 
 
@@ -271,7 +281,7 @@ def depth_err_to_colorbar(est, gt=None, with_bar=False, cmap='jet'):
     else:
         valid = gt > 0
         max_depth = gt.max()
-    error_map = np.abs(est - gt) * valid
+    error_map = np.abs(est - gt) * valid    
     h, w= error_map.shape
 
     maxvalue = error_map.max()

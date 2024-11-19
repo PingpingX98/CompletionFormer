@@ -1,8 +1,15 @@
 """
-    CompletionFormer
+    Non-Local Spatial Propagation Network for Depth Completion
+    Jinsun Park, Kyungdon Joo, Zhe Hu, Chi-Kuei Liu and In So Kweon
+
+    European Conference on Computer Vision (ECCV), Aug 2020
+
+    Project Page : https://github.com/zzangjinsun/NLSPN_ECCV20
+    Author : Jinsun Park (zzangjinsun@kaist.ac.kr)
+
     ======================================================================
 
-    CompletionFormerMetric implementation
+    NLSPNMetric implementation
 """
 
 
@@ -10,22 +17,18 @@ import torch
 from . import BaseMetric
 
 
-class CompletionFormerMetric(BaseMetric):
+class CompletionFormerMetricnew(BaseMetric):
     def __init__(self, args):
-        super(CompletionFormerMetric, self).__init__(args)
+        super(CompletionFormerMetricnew, self).__init__(args)
 
         self.args = args
         self.t_valid = 0.0001
-        '''
-        self.metric_name = [
-            'RMSE', 'MAE', 'iRMSE', 'iMAE', 'REL', 'D^1', 'D^2', 'D^3', 'D102', 'D105', 'D110'
-        ]
-        '''
+
         self.metric_name = [
             'RMSE', 'MAE', 'iRMSE', 'iMAE', 'REL', 'D^1', 'D^2', 'D^3'
         ]
 
-    def evaluate(self, sample, output, mode=None):
+    def evaluate(self, sample, output, mode):
         with torch.no_grad():
             pred = output['pred'].detach()
             gt = sample['gt'].detach()
@@ -78,22 +81,14 @@ class CompletionFormerMetric(BaseMetric):
             del_1 = (ratio < 1.25).type_as(ratio)
             del_2 = (ratio < 1.25**2).type_as(ratio)
             del_3 = (ratio < 1.25**3).type_as(ratio)
-            '''
-            del_102 = (ratio < 1.02).type_as(ratio)
-            del_105 = (ratio < 1.05).type_as(ratio)
-            del_110 = (ratio < 1.10).type_as(ratio)
-            '''
+
             del_1 = del_1.sum() / (num_valid + 1e-8)
             del_2 = del_2.sum() / (num_valid + 1e-8)
             del_3 = del_3.sum() / (num_valid + 1e-8)
-            '''
-            del_102 = del_102.sum() / (num_valid + 1e-8)
-            del_105 = del_105.sum() / (num_valid + 1e-8)
-            del_110 = del_110.sum() / (num_valid + 1e-8)
-            '''
 
             result = [rmse, mae, irmse, imae, rel, del_1, del_2, del_3]
             result = torch.stack(result)
+            result = torch.round(result * 10000) / 10000
             result = torch.unsqueeze(result, dim=0).detach()
 
         return result
