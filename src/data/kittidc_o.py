@@ -106,7 +106,7 @@ class KITTIDC(BaseDataset):
         return len(self.sample_list)
 
     def __getitem__(self, idx):
-        rgb, depth, gt, K, file_name= self._load_data(idx)
+        rgb, depth, gt, K = self._load_data(idx)
 
         if self.augment and self.mode == 'train':
             # Top crop if needed
@@ -238,9 +238,9 @@ class KITTIDC(BaseDataset):
             depth = TF.to_tensor(np.array(depth))
 
             gt = TF.to_tensor(np.array(gt))
-            file_name = file_name
-            
-        output = {'rgb': rgb, 'dep': depth, 'gt': gt, 'K': torch.Tensor(K), 'file_name': file_name}
+
+
+        output = {'rgb': rgb, 'dep': depth, 'gt': gt, 'K': torch.Tensor(K)}
 
         return output
 
@@ -253,8 +253,7 @@ class KITTIDC(BaseDataset):
                                self.sample_list[idx]['gt'])
         path_calib = os.path.join(self.args.dir_data,
                                   self.sample_list[idx]['K'])
-        file_name = os.path.basename(path_depth)
-        
+
         depth = read_depth(path_depth)
         gt = read_depth(path_gt)
 
@@ -297,5 +296,5 @@ class KITTIDC(BaseDataset):
 
         assert w1 == w2 and w1 == w3 and h1 == h2 and h1 == h3
 
-        return rgb, depth, gt, K, file_name
+        return rgb, depth, gt, K
 

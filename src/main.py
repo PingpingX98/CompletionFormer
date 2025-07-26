@@ -27,7 +27,9 @@ torch.autograd.set_detect_anomaly(True)
 import utility
 from model.completionformer import CompletionFormer
 from summary.cfsummary import CompletionFormerSummary
+from summary.cfsummarynew import CompletionFormerSummarynew
 from metric.cfmetric import CompletionFormerMetric
+from metric.cfmetricnew import CompletionFormerMetricnew
 from data import get as get_data
 from loss.l1l2loss import L1L2Loss
 
@@ -354,7 +356,8 @@ def test(args):
 
     net = nn.DataParallel(net)
 
-    metric = CompletionFormerMetric(args)
+    #metric = CompletionFormerMetric(args)
+    metric_new = CompletionFormerMetricnew(args)
 
     try:
         os.makedirs(args.save_dir, exist_ok=True)
@@ -362,7 +365,8 @@ def test(args):
     except OSError:
         pass
 
-    writer_test = CompletionFormerSummary(args.save_dir, 'test', args, None, metric.metric_name)
+    #writer_test = CompletionFormerSummary(args.save_dir, 'test', args, None, metric.metric_name)
+    writer_test_new = CompletionFormerSummarynew(args.save_dir, 'test', args, None, metric_new.metric_name)
 
     net.eval()
 
@@ -374,8 +378,9 @@ def test(args):
 
     init_seed()
     for batch, sample in enumerate(loader_test):
-        sample = {key: val.cuda() for key, val in sample.items()
-                  if val is not None}
+        # sample = {key: val.cuda() for key, val in sample.items()
+        #           if val is not None}
+        sample = {key: val.cuda() if isinstance(val, torch.Tensor) else val for key, val in sample.items()}
 
         t0 = time.time()
         with torch.no_grad():
@@ -384,13 +389,17 @@ def test(args):
 
         t_total += (t1 - t0)
 
-        metric_val = metric.evaluate(sample, output, 'test')
+        #metric_val = metric.evaluate(sample, output, 'test')
+        metric_val_new = metric_new.evaluate(sample, output, 'test')
 
-        writer_test.add(None, metric_val)
+        #writer_test.add(None, metric_val)
+        writer_test_new.add(None, metric_val_new)
 
         # Save data for analysis
-        if args.save_image:
-            writer_test.save(args.epochs, batch, sample, output)
+        # if args.save_result_only:
+        if args.save_result_only:
+            #writer_test.save(args.epochs, batch, sample, output)
+            writer_test_new.save(args.epochs, batch, sample, output)
 
         current_time = time.strftime('%y%m%d@%H:%M:%S')
         error_str = '{} | Test'.format(current_time)
@@ -400,7 +409,8 @@ def test(args):
 
     pbar.close()
 
-    writer_test.update(args.epochs, sample, output)
+    #writer_test.update(args.epochs, sample, output)
+    writer_test_new.update(args.epochs, sample, output)
 
     t_avg = t_total / num_sample
     print('Elapsed time : {} sec, '

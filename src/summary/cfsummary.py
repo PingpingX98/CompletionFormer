@@ -317,4 +317,3 @@ def revalue(map, lower, upper, start, scale):
         map[mask] = ((map[mask] - mn) / (mx -mn + 1e-7)) * scale + start
 
     return map
-
