@@ -40,6 +40,7 @@ import torch.distributed as dist
 import apex
 from apex.parallel import DistributedDataParallel as DDP
 from apex import amp
+import torch.utils.benchmark as benchmark
 torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 
