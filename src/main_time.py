@@ -72,6 +72,16 @@ def check_args(args):
 
     return new_args
 
+def move_to_cuda(x):
+    if isinstance(x, torch.Tensor):
+        return x.cuda()
+    elif isinstance(x, list):
+        return [move_to_cuda(v) for v in x]
+    elif isinstance(x, dict):
+        return {k: move_to_cuda(v) for k, v in x.items()}
+    else:
+        return x
+
 
 
 def test(args):
@@ -133,8 +143,10 @@ def test(args):
     times = []
     init_seed()
     for batch, sample in enumerate(loader_test):
-        sample = {key: val.cuda() for key, val in sample.items()
-                  if val is not None}
+        # sample = {key: val.cuda() for key, val in sample.items()
+        #           if val is not None}
+        sample = {key: move_to_cuda(val) for key, val in sample.items() if val is not None}
+
     #     sample = {
     #     key: [v.cuda() for v in val] if isinstance(val, list) else val.cuda()
     #     for key, val in sample.items()
