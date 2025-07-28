@@ -133,13 +133,13 @@ def test(args):
     times = []
     init_seed()
     for batch, sample in enumerate(loader_test):
-        # sample = {key: val.cuda() for key, val in sample.items()
-        #           if val is not None}
-        sample = {
-        key: [v.cuda() for v in val] if isinstance(val, list) else val.cuda()
-        for key, val in sample.items()
-        if val is not None
-    }
+        sample = {key: val.cuda() for key, val in sample.items()
+                  if val is not None}
+    #     sample = {
+    #     key: [v.cuda() for v in val] if isinstance(val, list) else val.cuda()
+    #     for key, val in sample.items()
+    #     if val is not None
+    # }
         timer = benchmark.Timer(
             stmt='net(sample)',
             globals={'net': net, 'sample': sample}
