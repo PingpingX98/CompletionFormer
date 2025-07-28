@@ -134,17 +134,13 @@ def test(args):
         #           if val is not None}
         sample = {key: val.cuda() if isinstance(val, torch.Tensor) else val for key, val in sample.items()}
         
-        t0 = time.time()
-        t1 = benchmark.Timer(
-            stmt='net(sample)',
-            globals={'net': net, 'sample': sample}
-        )
         torch.cuda.reset_max_memory_allocated(device=0)
+        t0 = time.time()
         with torch.no_grad():
             output = net(sample)
+        t1 = time.time()
         break
-        
-        
+              
     peak_memory = torch.cuda.max_memory_allocated(device=0) / 1024 ** 3
     print(f"[Batch {batch}] Inference time: {t1 - t0:.4f}s | Peak memory: {peak_memory:.3f} GB")  
 
