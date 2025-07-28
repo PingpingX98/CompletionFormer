@@ -144,7 +144,7 @@ def test(args):
     peak_memory = torch.cuda.max_memory_allocated(device=0) / 1024 ** 3
     print(f"[Batch {batch}] Inference time: {t1 - t0:.4f}s | Peak memory: {peak_memory:.3f} GB")  
 
-    model = run.net
+    model = net.module if isinstance(net, torch.nn.DataParallel) else net
     trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print(f"Number of trainable parameters: {trainable_params}")   
 
