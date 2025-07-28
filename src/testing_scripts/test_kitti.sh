@@ -12,7 +12,7 @@ for lidar_lines in 64
 do
   python main_time.py --dir_data /home/descfly/data/kitti_depth \
       --data_name KITTIDC --split_json ../data_json/kitti_dc.json \
-      --patch_height 352 --patch_width 1216 --gpus 0 --max_depth 90.0 \
+      --patch_height 256 --patch_width 1216 --gpus 0 --max_depth 90.0 \
       --top_crop 0 --test_crop  --test_only \
       --pretrain $ckpt  --lidar_lines $lidar_lines \
       --log_dir /data/compare/metric/CFormer/experiments/ \
