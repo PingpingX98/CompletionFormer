@@ -19,4 +19,4 @@ do
       --save "val_kitti_lines${lidar_lines}" \
       --save_image
       # --save_result_only 
-  done
+done
