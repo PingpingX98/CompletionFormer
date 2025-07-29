@@ -260,7 +260,7 @@ parser.add_argument('--add_noise',
                      default=True,
                      help='Add noise to sparse depth')
 parser.add_argument('--noise_type', 
-                    default='gaussian', 
+                    default='impulse', 
                     choices=['gaussian', 'impulse', 'rayleigh', 'gamma', 'exponential', 'uniform'], 
                     help='Type of noise to add')
 
