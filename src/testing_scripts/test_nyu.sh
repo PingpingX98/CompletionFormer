@@ -26,7 +26,7 @@ python main.py --dir_data /home/descfly/data/nyudepthv2 \
     --gpus 0 --max_depth 10.0 --num_sample $sample \
     --test_only --pretrain $ckpt --batch_size 1 \
     --log_dir /data/compare/metric/CFormer/experiments/ \
-    --save "test_nyu_sample${sample}" 
-    # --save_result_only
+    --save "test_nyu_sample${sample}" \
+    --save_result_only
     # --save 'nyu_1.10' \
 done
