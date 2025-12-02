@@ -5,7 +5,7 @@ ckpt=/home/descfly/Projects/CompletionFormer-main/NYUv2.pt
 # for sample in 1 50 100 200 500 
 # for sample in 1000 5000 20000
 # for sample in 20 2000 10000
-for noise_type in gaussian impulse rayleigh gamma exponential uniform
+for noise_level in 0.05 0.04 0.03 0.02 0.01
 
 # do
 # # python main.py --dir_data /home/descfly/data/nyudepthv2 --data_name NYU --split_json ../data_json/nyu.json \
@@ -26,8 +26,8 @@ do
         --gpus 0 --max_depth 10.0 --num_sample 500 \
         --test_only --pretrain $ckpt --batch_size 1 \
         --log_dir /data/compare/metric/CFormer/experiments/ \
-        --save "test_nyu_noise_$noise_type" \
-        --add_noise --noise_type $noise_type
+        --save "test_nyu_noise_$noise_level" \
+        --noise_level $noise_level
     # --save_result_only
     # --save 'nyu_1.10' \
 done

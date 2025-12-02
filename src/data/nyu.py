@@ -20,12 +20,12 @@ import numpy as np
 import json
 import h5py
 from . import BaseDataset
-
+import random
 from PIL import Image
 import torch
 import torchvision.transforms as T
 import torchvision.transforms.functional as TF
-from .noisedata import add_noise
+from .noisedata import add_noise, diff_level_noise
 warnings.filterwarnings("ignore", category=UserWarning)
 
 """
@@ -158,10 +158,12 @@ class NYU(BaseDataset):
             K = self.K.clone()
 
         dep_sp = self.get_sparse_depth(dep, self.args.num_sample)
+        # if self.args.add_noise:
+        #     dep_sp, noise_info = add_noise(dep_sp, noise_type=self.args.noise_type)
+        # else:
+        #     noise_info = None
         if self.args.add_noise:
-            dep_sp, noise_info = add_noise(dep_sp, noise_type=self.args.noise_type)
-        else:
-            noise_info = None
+            dep_sp = diff_level_noise(dep_sp, mask=None, noise_level=self.args.noise_level)
         output = {'rgb': rgb, 'dep': dep_sp, 'gt': dep, 'K': K}
 
         return output
@@ -185,3 +187,5 @@ class NYU(BaseDataset):
         dep_sp = dep * mask.type_as(dep)
 
         return dep_sp
+    
+   

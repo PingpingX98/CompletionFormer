@@ -19,11 +19,11 @@ import torch
 import torchvision.transforms as T
 import torchvision.transforms.functional as TF
 from .nyu_sample import uniform_sample3
-
+from .noisedata import diff_level_noise,diff_level_noise_mul
 warnings.filterwarnings("ignore", category=UserWarning)
 
 """
-NYUDepthV2 json file has a following format:
+NYUDepthV2 json filnyu_mske has a following format:
 
 {
     "train": [
@@ -60,8 +60,10 @@ class NYU(BaseDataset):
             raise NotImplementedError
 
         # For NYUDepthV2, crop size is fixed
-        height, width = (240, 320)
-        crop_size = (228, 304)
+        # height, width = (240, 320)
+        # crop_size = (228, 304)
+        height, width = (256, 320)
+        crop_size = (256, 320)
 
         self.height = height
         self.width = width
@@ -162,7 +164,8 @@ class NYU(BaseDataset):
         else:
             # dep_sp = self.get_sparse_depth(dep, num_sample)
             dep_sp = self.mask_sparse_depth(dep, self.args.num_sample, seed)
-
+        # dep_sp, noise_info = diff_level_noise(dep_sp, mask=None, noise_level=self.args.noise_level)
+        # dep_sp = diff_level_noise_mul(dep_sp, mask=None, noise_level=self.args.noise_level)
         output = {'rgb': rgb, 'dep': dep_sp, 'gt': dep, 'K': K}
 
         return output

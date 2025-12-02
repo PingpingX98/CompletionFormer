@@ -132,12 +132,20 @@ def test(args):
     for batch, sample in enumerate(loader_test):
         # sample = {key: val.cuda() for key, val in sample.items()
         #           if val is not None}
-        sample = {key: val.cuda() if isinstance(val, torch.Tensor) else val for key, val in sample.items()}
+        
         torch.cuda.reset_max_memory_allocated(device=0)
+        peak_memory = torch.cuda.max_memory_allocated(device=0) / 1024 ** 3
+        print(f"Peak memory: {peak_memory:.3f} GB")
+        sample = {key: val.cuda() if isinstance(val, torch.Tensor) else val for key, val in sample.items()}
+        print(sample['rgb'].shape)
         timer = benchmark.Timer(
             stmt='net(sample)',
             globals={'net': net, 'sample': sample}
         )
+        
+        # measured_time = timer.timeit(1000).mean
+        print(timer.timeit(100))
+        output = net(sample)
         break       
     peak_memory = torch.cuda.max_memory_allocated(device=0) / 1024 ** 3
     measured_time = timer.timeit(1000).mean

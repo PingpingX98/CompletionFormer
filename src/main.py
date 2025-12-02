@@ -272,7 +272,7 @@ def train(gpu, args):
 
             torch.save(state, '{}/model_{:05d}.pt'.format(args.save_dir, epoch))
 
-        # Val
+        # Valum_sample : 500
         torch.set_grad_enabled(False)
         net.eval()
 
@@ -342,7 +342,7 @@ def test(args):
             "file not found: {}".format(args.pretrain)
 
         checkpoint = torch.load(args.pretrain)
-        key_m, key_u = net.load_state_dict(checkpoint['net'], strict=False)
+        key_m, key_u = net.load_state_dict(checkpoint['net'], strict=True)
 
         if key_u:
             print('Unexpected keys :')
