@@ -23,8 +23,8 @@ services:
     - NVIDIA_DRIVER_CAPABILITIES=all
     volumes:
       - ./:/root/CF
-      - /home/xpp/data/nyudepthv2:/root/CF/datas/nyudepthv2
-      - /home/xpp/checkpoints/cformer:/root/CF/checkpoints
+      - /mnt/data/nyudepthv2:/root/CF/datas/nyudepthv2
+      - /mnt/checkpoints/cformer:/root/CF/checkpoints
 
       # - /home/jie/data/NYUV2_depth/nyudepthv2:/root/NEAT/datas/nyudepthv2
     working_dir: /root/CF
