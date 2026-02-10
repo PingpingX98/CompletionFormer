@@ -21,9 +21,9 @@
 #done
    
 
-python main.py --dir_data /mnt/data/nyudepthv2 --data_name NYU  --split_json ../data_json/nyu.json \
+python main.py --dir_data ../datas/nyudepthv2 --data_name NYU  --split_json ../data_json/nyu.json \
     --gpus 0 --max_depth 10.0 --num_sample 500 --save_image \
-    --test_only --pretrain /mnt/checkpoints/CFormer/NYUv2.pt --save ../results
+    --test_only --pretrain ../checkpoints/NYUv2.pt --save ../results
 
 
 
