@@ -19,12 +19,14 @@
 #    # --save 'nyu_1.1' \
 #    # --save_full --save_pointcloud_visualization --save_image \
 #done
-   
+for num_sample in 1 5
 
-python main.py --dir_data ../datas/nyudepthv2 --data_name NYU  --split_json ../data_json/nyu.json \
-    --gpus 0 --max_depth 10.0 --num_sample 500 --save_image \
-    --test_only --pretrain ../checkpoints/NYUv2.pt --save ../results
-
+do 
+    python main.py --dir_data ../datas/nyudepthv2 --data_name NYU  --split_json ../data_json/nyu.json \
+        --gpus 0 --max_depth 10.0 --num_sample $num_sample --save_image \
+        --test_only --pretrain ../checkpoints/NYUv2.pt --save ../results  --log_dir ../experiments/${num_sample}_ \
+        --save_result_only
+done
 
 
 #python main.py --dir_data /mnt/data/nyudepthv2 --data_name NYU --split_json ../data_json/nyu.json \

@@ -356,17 +356,23 @@ def test(args):
 
     net = nn.DataParallel(net)
 
-    metric = CompletionFormerMetric(args)
-    # metric_new = CompletionFormerMetricnew(args)
+    # metric = CompletionFormerMetric(args)
+    metric_new = CompletionFormerMetricnew(args)
+
+    # try:
+    #     os.makedirs(args.save_dir, exist_ok=True)
+    #     os.makedirs(args.save_dir + '/test', exist_ok=True)
+    # except OSError:
+    #     pass
 
     try:
-        os.makedirs(args.save_dir, exist_ok=True)
-        os.makedirs(args.save_dir + '/test', exist_ok=True)
+        os.makedirs(args.log_dir, exist_ok=True)
+        os.makedirs(args.log_dir + '/test', exist_ok=True)
     except OSError:
         pass
 
-    writer_test = CompletionFormerSummary(args.save_dir, 'test', args, None, metric.metric_name)
-    # writer_test_new = CompletionFormerSummarynew(args.save_dir, 'test', args, None, metric_new.metric_name)
+    # writer_test = CompletionFormerSummary(args.save_dir, 'test', args, None, metric.metric_name)
+    writer_test_new = CompletionFormerSummarynew(args.log_dir, 'test', args, None, metric_new.metric_name)
 
     net.eval()
 
@@ -389,17 +395,17 @@ def test(args):
 
         t_total += (t1 - t0)
 
-        metric_val = metric.evaluate(sample, output, 'test')
-        # metric_val_new = metric_new.evaluate(sample, output, 'test')
+        # metric_val = metric.evaluate(sample, output, 'test')
+        metric_val_new = metric_new.evaluate(sample, output, 'test')
 
-        writer_test.add(None, metric_val)
-        # writer_test_new.add(None, metric_val_new)
+        # writer_test.add(None, metric_val)
+        writer_test_new.add(None, metric_val_new)
 
         # Save data for analysis
         # if args.save_result_only:
         if args.save_result_only:
-            writer_test.save(args.epochs, batch, sample, output)
-            # writer_test_new.save(args.epochs, batch, sample, output)
+            # writer_test.save(args.epochs, batch, sample, output)
+            writer_test_new.save(args.epochs, batch, sample, output)
 
         current_time = time.strftime('%y%m%d@%H:%M:%S')
         error_str = '{} | Test'.format(current_time)
@@ -409,8 +415,8 @@ def test(args):
 
     pbar.close()
 
-    writer_test.update(args.epochs, sample, output)
-    # writer_test_new.update(args.epochs, sample, output)
+    # writer_test.update(args.epochs, sample, output)
+    writer_test_new.update(args.epochs, sample, output)
 
     t_avg = t_total / num_sample
     print('Elapsed time : {} sec, '
