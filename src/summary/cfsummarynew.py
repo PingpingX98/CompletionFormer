@@ -203,7 +203,13 @@ class CompletionFormerSummarynew(BaseSummary):
                 pred = torch.clamp(pred, min=0)
 
                 pred = pred[0, 0, :, :].data.cpu().numpy()
+                print(f"pred shape: {pred.shape}")
 
+                pred =  1 + (pred - pred.min()) / (pred.max() - pred.min())
+                pred_test = pred[:, 30:-20]
+                print(f"pred_test shape: {pred_test.shape}")
+                print(f"pred_test min is {pred_test.min()}, max is {pred_test.max()}")
+                print(f"pred min is {pred.min()}, max is {pred.max()}")
                 pred = (pred*256.0).astype(np.uint16)
                 color_depth = self.Colorize(pred, min_distance=pred[pred > 0].min(), max_distance=pred.max())
                 imageio.imwrite(path_save_pred, pred)
