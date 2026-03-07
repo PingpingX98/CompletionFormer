@@ -20,7 +20,7 @@ import torchvision.transforms as T
 import torchvision.transforms.functional as TF
 from .nyu_sample import uniform_sample3
 from .noisedata import diff_level_noise,diff_level_noise_mul
-from ..config import args
+# from ..config import args
 
 warnings.filterwarnings("ignore", category=UserWarning)
 
