@@ -1,6 +1,6 @@
 
 #ckpt=/mnt/checkpoints/CFormer/NYUv2.pt
-
+num_masks=100
 # for sample in 1 5 50 100 200 300 400 500 
 # for sample in 1 50 100 200 500 
 # for sample in 1000 5000 20000
@@ -19,12 +19,14 @@
 #    # --save 'nyu_1.1' \
 #    # --save_full --save_pointcloud_visualization --save_image \
 #done
-for num_sample in 20 50 100 200 500 1000 2000 5000 10000 20000
+#for num_sample in 20 50 100 200 500 1000 2000 5000 10000 20000
+for num_sample in 10
 
 do
     python main.py --dir_data ../datas/nyudepthv2 --data_name NYU  --split_json ../data_json/nyu.json \
         --gpus 0 --max_depth 10.0 --num_sample $num_sample --save_image \
-        --test_only --pretrain ../checkpoints/NYUv2.pt --save ../results  --log_dir ../experiments/test/${num_sample}/ \
+        --test_only --pretrain ../checkpoints/NYUv2.pt --save ../results  --log_dir ../experiments/mask${num_masks}sample${num_sample}/ \
+        --num_masks ${num_masks}
 #        --save_result_only
 done
 
