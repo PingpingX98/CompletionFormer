@@ -16,6 +16,7 @@ python main.py --dir_data /mnt/data/kitti_depth --data_name KITTIDC --split_json
     --patch_height 240 --patch_width 1216 --gpus 0 --max_depth 90.0 --top_crop 100 --test_crop --save-image \
     --test_only --pretrain /mnt/checkpoints/CFormer/KITTIDC_L1L2.pt --save NAME_TO_SAVE
 
+**num_mask=8**
 ``` RMSE: 1.30448  MAE: 1.05266  iRMSE: 0.89140  iMAE: 0.24200  REL: 0.34600  D_1: 0.12602 
 1
 ```
@@ -67,3 +68,5 @@ python main.py --dir_data /mnt/data/kitti_depth --data_name KITTIDC --split_json
 ```RMSE: 0.20324  MAE: 0.13359  iRMSE: 0.02562  iMAE: 0.01810  REL: 0.04611  D_1: 0.88930
 20000
 ```
+
+**num_mask=100**
