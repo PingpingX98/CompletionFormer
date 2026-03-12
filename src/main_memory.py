@@ -129,24 +129,21 @@ def test(args):
     t_total = 0
 
     init_seed()
+    torch.cuda.reset_max_memory_allocated(device=0)
+    peak_memory = torch.cuda.max_memory_allocated(device=0) / 1024 ** 3
+    print(f"Peak memory usage: {peak_memory_usage:.3f} GB")
     for batch, sample in enumerate(loader_test):
-        # sample = {key: val.cuda() for key, val in sample.items()
-        #           if val is not None}
-        
+
         torch.cuda.reset_max_memory_allocated(device=0)
-        peak_memory = torch.cuda.max_memory_allocated(device=0) / 1024 ** 3
-        print(f"Peak memory: {peak_memory:.3f} GB")
         sample = {key: val.cuda() if isinstance(val, torch.Tensor) else val for key, val in sample.items()}
-        print(sample['rgb'].shape)
-        timer = benchmark.Timer(
-            stmt='net(sample)',
-            globals={'net': net, 'sample': sample}
-        )
-        
-        # measured_time = timer.timeit(1000).mean
-        print(timer.timeit(100))
         output = net(sample)
-        break       
+        memory_allocated = torch.cuda.memory_allocated(device=0) / 1024 ** 3  # Convert to GB
+        print(f"Memory allocated: {memory_allocated:.3f} GB")
+        # measured_time = timer.timeit(1000).mean
+        # print(timer.timeit(1000))
+        # output = net(sample)
+        if batch > 6:
+            break
     peak_memory = torch.cuda.max_memory_allocated(device=0) / 1024 ** 3
     measured_time = timer.timeit(1000).mean
     print(f"[Batch {batch}] Inference time: {measured_time:.6f}s | Peak memory: {peak_memory:.3f} GB")  

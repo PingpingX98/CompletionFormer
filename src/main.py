@@ -404,10 +404,11 @@ def test(args):
         # sample = {key: val.cuda() for key, val in sample.items()
         #           if val is not None}
         sample = {key: val.cuda() if isinstance(val, torch.Tensor) else val for key, val in sample.items()}
-        # if batch < 111:
-        #     continue
-        # if batch > 111:
-        #     break
+        single_idx = 263
+        if batch < single_idx * args.num_masks:
+            continue
+        if batch > (single_idx + 1) * args.num_masks:
+            break
         t0 = time.time()
         with torch.no_grad():
             output = net(sample)

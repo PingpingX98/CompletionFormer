@@ -70,7 +70,7 @@ python main.py --dir_data /mnt/data/kitti_depth --data_name KITTIDC --split_json
 ```
 
 ----------------------mask100---------------------------
-```aiignore
+```RMSE: 1.05171  MAE: 0.83613  iRMSE: 0.20562  iMAE: 0.15438  REL: 0.28114  D^1: 0.39652  D^2: 0.73807  D^3: 0.90420  D102: 0.03591  D105: 0.08623  D110: 0.16635
 10
 ```
 
