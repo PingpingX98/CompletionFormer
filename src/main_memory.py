@@ -129,28 +129,31 @@ def test(args):
     t_total = 0
 
     init_seed()
-    torch.cuda.reset_max_memory_allocated(device=0)
-    peak_memory = torch.cuda.max_memory_allocated(device=0) / 1024 ** 3
-    print(f"Peak memory usage: {peak_memory_usage:.3f} GB")
-    for batch, sample in enumerate(loader_test):
-
+    with torch.no_grad():
         torch.cuda.reset_max_memory_allocated(device=0)
-        sample = {key: val.cuda() if isinstance(val, torch.Tensor) else val for key, val in sample.items()}
-        output = net(sample)
-        memory_allocated = torch.cuda.memory_allocated(device=0) / 1024 ** 3  # Convert to GB
-        print(f"Memory allocated: {memory_allocated:.3f} GB")
-        # measured_time = timer.timeit(1000).mean
-        # print(timer.timeit(1000))
-        # output = net(sample)
-        if batch > 6:
-            break
-    peak_memory = torch.cuda.max_memory_allocated(device=0) / 1024 ** 3
-    measured_time = timer.timeit(1000).mean
-    print(f"[Batch {batch}] Inference time: {measured_time:.6f}s | Peak memory: {peak_memory:.3f} GB")  
+        peak_memory_usage = torch.cuda.max_memory_allocated(device=0) / 1024 ** 3
+        print(f"Peak memory usage: {peak_memory_usage:.3f} GB")
+        torch.cuda.reset_max_memory_allocated(device=0)
 
-    model = net.module if isinstance(net, torch.nn.DataParallel) else net
-    trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
-    print(f"Number of trainable parameters: {trainable_params}")   
+        peak_memory_usage1 = torch.cuda.max_memory_allocated(device=0) / 1024 ** 3
+        print(f"Peak memory usage: {peak_memory_usage1:.3f} GB")
+        for batch, sample in enumerate(loader_test):
+            sample = {key: val.cuda() if isinstance(val, torch.Tensor) else val for key, val in sample.items()}
+            torch.cuda.reset_max_memory_allocated(device=0)
+
+            output = net(sample)
+            peak_memory_usage = torch.cuda.max_memory_allocated(device=0) / 1024 ** 3
+            print(f"Peak memory usage: {peak_memory_usage:.3f} GB")
+            if batch > 6:
+                break
+        print(f"Peak memory usage: {peak_memory_usage-peak_memory_usage1:.3f} GB")
+    # peak_memory = torch.cuda.max_memory_allocated(device=0) / 1024 ** 3
+    # measured_time = timer.timeit(1000).mean
+    # print(f"[Batch {batch}] Inference time: {measured_time:.6f}s | Peak memory: {peak_memory:.3f} GB")
+    #
+    # model = net.module if isinstance(net, torch.nn.DataParallel) else net
+    # trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    # print(f"Number of trainable parameters: {trainable_params}")
 
 def main(args):
     init_seed()
